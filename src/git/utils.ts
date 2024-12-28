@@ -4,25 +4,30 @@ import { extensions } from "vscode";
 
 
 const execute = async (
-  commmand: string,
+  command: string,
   args: string[],
   options: ExecOptions = {}
 ): Promise<string> => {
-  return new Promise((res) => {
+  const fullCommand = process.platform === "win32"
+    ? `& "${command}" ${args.join(" ")}`
+    : `${command} ${args.join(" ")}`;
+  return new Promise((resolve) => {
     execFile(
-      commmand,
+      command,
       args,
       { ...options, encoding: 'utf8' },
       (err, stdout, stderr): void => {
         if (err || stderr) {
-          res("");
+          console.error(`Error: ${err || stderr}`);
+          resolve("");
         } else {
-          res(stdout.trim());
+          resolve(stdout.trim());
         }
       }
     );
   });
 };
+
 
 
 export const getGitPath = (): string => {
@@ -33,9 +38,9 @@ export const getGitPath = (): string => {
   return "git";
 };
 
-export const runGit = async (cwd: string, ...args: string[]) => {
-  execute(getGitPath(), args, {
-    cwd: dirname(cwd),
+export const runGit = async (cwd: string, ...args: string[]): Promise<string> => {
+  return await execute(getGitPath(), args, {
+    cwd: cwd,
     env: { ...process.env, LC_ALL: "C" },
   });
 };
