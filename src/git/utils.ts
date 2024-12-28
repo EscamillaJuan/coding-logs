@@ -28,8 +28,6 @@ const execute = async (
   });
 };
 
-
-
 export const getGitPath = (): string => {
   const gitUtil = extensions.getExtension('vscode.git');
   if (gitUtil?.exports.enabled) {
@@ -44,5 +42,3 @@ export const runGit = async (cwd: string, ...args: string[]): Promise<string> =>
     env: { ...process.env, LC_ALL: "C" },
   });
 };
-
-
