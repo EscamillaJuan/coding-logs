@@ -28,7 +28,8 @@ const execute = async (
   });
 };
 
-export const getGitPath = (): string => {
+export const getGitPath = (
+): string => {
   const gitUtil = extensions.getExtension('vscode.git');
   if (gitUtil?.exports.enabled) {
     return gitUtil.exports.getAPI(1).git.path;
@@ -36,9 +37,23 @@ export const getGitPath = (): string => {
   return "git";
 };
 
-export const runGit = async (cwd: string, ...args: string[]): Promise<string> => {
+export const runGit = async (
+  cwd: string,
+  ...args: string[]
+): Promise<string> => {
   return await execute(getGitPath(), args, {
     cwd: cwd,
     env: { ...process.env, LC_ALL: "C" },
   });
+};
+
+export const isRepository = async (
+  cwd: string
+): Promise<boolean> => {
+  try {
+    const result = await runGit(cwd, 'rev-parse', '--is-inside-work-tree');
+    return result.trim() === 'true';
+  } catch (error) {
+    return false;
+  }
 };

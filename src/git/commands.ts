@@ -29,5 +29,5 @@ export const gitCommit = async (
   dir: string,
   message: string
 ): Promise<string> => {
-  return await runGit(dir, "commit", "-m", message);
+  return await runGit(dir, "commit", "-m", `"${message}"`);
 };

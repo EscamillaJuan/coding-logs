@@ -17,7 +17,17 @@
         "command": "coding-logs.init",
         "title": "Coding logs"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "codingLogs.logsRepository": {
+          "type": "string",
+          "default": "",
+          "description": "URL of the repository where logs will be stored."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

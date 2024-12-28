@@ -1,12 +1,11 @@
 import * as vscode from 'vscode';
-import { getRepositoryChanges, initGitExtension } from './commands';
+import { getGitPath, isRepository } from './git/utils';
+import { createLog } from './actions';
 
 export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('coding-logs.init', async () => {
-		const repo = await initGitExtension();
-		getRepositoryChanges(repo);
+		createLog();
 	});
-
 	context.subscriptions.push(disposable);
 }
 
