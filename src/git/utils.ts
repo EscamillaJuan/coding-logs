@@ -18,7 +18,6 @@ const execute = async (
       { ...options, encoding: 'utf8' },
       (err, stdout, stderr): void => {
         if (err || stderr) {
-          console.error(`Error: ${err || stderr}`);
           resolve("");
         } else {
           resolve(stdout.trim());

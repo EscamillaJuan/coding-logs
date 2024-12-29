@@ -1,79 +1,54 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as vscode from 'vscode';
-import { getGitPath, isRepository } from './git/utils';
-import { gitAdd, gitCommit, gitPull, gitPush, gitStatus } from './git/commands';
-import { getLogRepo } from './config';
+import { gitAdd, gitCommit, gitPush } from './git/commands';
 
-const processChanges = (
+export const processChanges = async (
   dir: string,
+  cwd: string,
   changes: string[]
-): string => {
-  const logFolder = path.join(dir, 'logs');
-  if (!fs.existsSync(logFolder)) {
-    fs.mkdirSync(logFolder);
-  }
+) => {
+  const file = path.basename(cwd);
   const commit = generateCommit(changes);
-  const logPath = path.join(logFolder, 'git-status-log.md');
+  const logPath = path.join(dir, `${file}_logs.md`);
+  console.log(logPath);
   const content = generateLogFile(commit, changes);
-  fs.writeFileSync(logPath, content, { encoding: 'utf-8' });
-  return commit;
+  if (fs.existsSync(logPath)) {
+    fs.appendFileSync(logPath, content, { encoding: 'utf-8' });
+  } else {
+    fs.writeFileSync(logPath, content, { encoding: 'utf-8' });
+  }
+  await gitAdd(dir);
+  await gitCommit(dir, commit);
+  await gitPush(dir);
 };
 
-function generateCommit(
+const generateCommit = (
   changes: string[]
-): string {
+): string => {
   const summary = changes.reduce(
     (acc, line) => {
       if (line.startsWith('M')) { acc.modified++; }
       else if (line.startsWith('A')) { acc.added++; }
       else if (line.startsWith('D')) { acc.deleted++; }
+      else if (line.startsWith('??')) { acc.created++; }
       return acc;
     },
-    { modified: 0, added: 0, deleted: 0 }
+    { modified: 0, added: 0, deleted: 0, created: 0 }
   );
-  return `Summary: ${summary.added} added, ${summary.modified} modified, ${summary.deleted} deleted.`;
-}
-
-function generateLogFile(
-  commitMessage: string,
-  changes: string[]
-): string {
-  const date = new Date().toISOString();
-  const changeDetails = changes.map(line => `- ${line}`).join('\n');
-  return `# Git Log\n\n## Commit Message\n${commitMessage}\n\n## Status Details\n${changeDetails}\n\n_Log generated on ${date}_\n\n`;
-}
-
-export const createLog = async (
-) => {
-  const gitPath = getGitPath();
-  if (gitPath === null) {
-    vscode.window.showErrorMessage("Git is not installed or not configured properly.");
-    return;
-  };
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders || workspaceFolders.length === 0) {
-    vscode.window.showErrorMessage("No workspace folder is open.");
-    return;
-  }
-  const workspacePath = workspaceFolders[0].uri.fsPath;
-  const isRepo = await isRepository(workspacePath);
-  if (!isRepo) {
-    vscode.window.showErrorMessage("The current folder is not a Git repository.");
-    return;
-  }
-  const changes = await gitStatus(workspacePath);
-
-  const logRepo = getLogRepo();
-
-  if (logRepo.length <= 0) {
-    vscode.window.showErrorMessage("Logs repository not configured properly.");
-    return;
-  }
-  const commit = processChanges(logRepo, changes);
-  await gitPull(logRepo);
-  await gitAdd(logRepo);
-  await gitCommit(logRepo, commit);
-  await gitPush(logRepo);
+  return `log: ${summary.added} added, ${summary.modified} modified, ${summary.deleted} deleted, ${summary.created} created.`;
 };
 
+const generateLogFile = (
+  commitMessage: string,
+  changes: string[]
+): string => {
+  const date = new Date().toISOString();
+  const changeDetails = changes.map(line => `- ${line}`).join('\n');
+  return `
+  ### Commit Message\n
+  ${commitMessage}\n\n
+  ### Commit Details\n
+  ${changeDetails}\n\n
+  _Log generated on ${date}_\n\n
+  ------------------------------\n\n`;
+};

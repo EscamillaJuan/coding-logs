@@ -1,6 +1,6 @@
 import { workspace } from 'vscode';
 
-export const getLogRepo = (
+export const getLogRepoPath = (
 ):
   string => {
   const config = workspace.getConfiguration('codingLogs');
