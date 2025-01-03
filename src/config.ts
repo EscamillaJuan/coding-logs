@@ -1,8 +1,14 @@
 import { workspace } from 'vscode';
 
 export const getLogRepoPath = (
-):
-  string => {
+): string => {
   const config = workspace.getConfiguration('codingLogs');
-  return config.get('logsRepository', '');
+  return config.get('logsRepositoryPath', '');
+};
+
+export const getLogsTimeInterval = (
+): number => {
+  const config = workspace.getConfiguration('codingLogs');
+  const intervalMin = config.get("checkIntervalTime", 30);
+  return intervalMin * 60000;
 };

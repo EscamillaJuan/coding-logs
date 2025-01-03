@@ -21,10 +21,15 @@
     "configuration": {
       "type": "object",
       "properties": {
-        "codingLogs.logsRepository": {
+        "codingLogs.logsRepositoryPath": {
           "type": "string",
           "default": "",
-          "description": "URL of the repository where logs will be stored."
+          "description": "Path of the repository where logs will be stored."
+        },
+        "codingLogs.checkIntervalTime": {
+          "type": "integer",
+          "default": 30,
+          "description": "Interval time in minutes to check for changes in the repository."
         }
       }
     }

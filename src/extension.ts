@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import { getGitPath, isRepository } from './git/utils';
 import { gitStatus } from './git/commands';
-import { getLogRepoPath } from './config';
+import { getLogRepoPath, getLogsTimeInterval } from './config';
 import { processChanges } from './actions';
 import { isDeveloperWorking } from './changes';
+
+let intervalId: NodeJS.Timeout | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('coding-logs.init', async () => {
@@ -13,14 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		};
 		const cwd = await getCwd();
-		setInterval(() => {
+		const timeInterval = getLogsTimeInterval();
+		intervalId = setInterval(() => {
 			generateLog(cwd);
-		}, 1000);
+		}, timeInterval);
 	});
 	context.subscriptions.push(disposable);
 }
 
-export function deactivate() { }
+export function deactivate() {
+	if (intervalId) {
+		clearInterval(intervalId);
+	}
+}
 
 const getCwd = async (
 ): Promise<string> => {
