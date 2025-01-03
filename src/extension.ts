@@ -3,6 +3,7 @@ import { getGitPath, isRepository } from './git/utils';
 import { gitStatus } from './git/commands';
 import { getLogRepoPath } from './config';
 import { processChanges } from './actions';
+import { isDeveloperWorking } from './changes';
 
 export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('coding-logs.init', async () => {
@@ -14,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const cwd = await getCwd();
 		setInterval(() => {
 			generateLog(cwd);
-		}, 60000);
+		}, 1000);
 	});
 	context.subscriptions.push(disposable);
 }
@@ -46,6 +47,10 @@ const generateLog = async (
 		vscode.window.showErrorMessage("Logs repository not configured properly.");
 		return;
 	}
-	if (changes.length <= 0) { return; }
+	const isDevWorking = await isDeveloperWorking(cwd, logRepoPath);
+	if (changes.length <= 0 || !isDevWorking) {
+		vscode.window.showInformationMessage("You need to work!!!");
+		return;
+	}
 	processChanges(logRepoPath, cwd, changes);
 };

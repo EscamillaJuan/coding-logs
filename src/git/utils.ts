@@ -1,5 +1,4 @@
 import { execFile, ExecOptions } from "child_process";
-import { dirname } from "path";
 import { extensions } from "vscode";
 
 

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { gitAdd, gitCommit, gitPush } from './git/commands';
+import { storeChanges } from './changes';
 
 export const processChanges = async (
   dir: string,
@@ -10,16 +11,16 @@ export const processChanges = async (
   const file = path.basename(cwd);
   const commit = generateCommit(changes);
   const logPath = path.join(dir, `${file}_logs.md`);
-  console.log(logPath);
   const content = generateLogFile(commit, changes);
   if (fs.existsSync(logPath)) {
     fs.appendFileSync(logPath, content, { encoding: 'utf-8' });
   } else {
     fs.writeFileSync(logPath, content, { encoding: 'utf-8' });
   }
-  await gitAdd(dir);
+  await gitAdd(dir, logPath);
   await gitCommit(dir, commit);
   await gitPush(dir);
+  storeChanges(cwd, dir);
 };
 
 const generateCommit = (

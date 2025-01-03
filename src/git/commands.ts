@@ -20,9 +20,10 @@ export const gitStatus = async (
 };
 
 export const gitAdd = async (
-  dir: string
+  dir: string,
+  file: string,
 ): Promise<string> => {
-  return await runGit(dir, "add", ".");
+  return await runGit(dir, "add", file);
 };
 
 export const gitCommit = async (
@@ -30,4 +31,16 @@ export const gitCommit = async (
   message: string
 ): Promise<string> => {
   return await runGit(dir, "commit", "-m", `"${message}"`);
+};
+
+export const gitDiff = async (
+  cwd: string,
+): Promise<string> => {
+  return await runGit(cwd, 'diff');
+};
+
+export const gitIntendToAdd = async (
+  cwd: string,
+) => {
+  return await runGit(cwd, "add", "--intent-to-add", ".");
 };
