@@ -1,71 +1,94 @@
-# coding-logs README
+# Coding Logs
 
-This is the README for your extension "coding-logs". After writing up a brief description, we recommend including the following sections.
+**Coding Logs** is a Visual Studio Code extension designed to track your Git-based productivity. It periodically checks for changes in your codebase and helps you maintain a consistent contribution history on GitHub. Whether you're aiming to keep your GitHub contribution graph active or tracking daily activity, **Coding Logs** has you covered.
 
-## Features
+### Why Use Coding Logs?
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+GitHub only tracks contributions when changes are made to the **default branch** of a repository. This means that work done in other branches or separate projects often doesn't appear in your GitHub contributions graph.
 
-For example if there is an image subfolder under your extension project workspace:
+**Coding Logs** solves this problem by creating a simple and automated way to log your activity. With this extension, every change you make—regardless of the branch or project—can contribute to your GitHub contributions graph. It helps you:
 
-\!\[feature X\]\(images/feature-x.png\)
+- Maintain a consistent and impressive contribution history on GitHub.
+- Ensure all your coding efforts are recognized, even if you're working across multiple projects or branches.
+- Track your daily productivity and monitor your progress over time.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+This is especially useful for developers who want to reflect their actual coding activity in their GitHub profile, whether for personal tracking, portfolio building, or job opportunities.
 
-## Requirements
+## 🚀 Features
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+- **Automatic Git Change Tracking**: The extension checks for changes in your Git repository at customizable intervals.
+- **Productivity Tracking**: Log changes to reflect your daily activity and keep your GitHub contributions consistent.
+- **Customizable Check Interval**: Adjust the interval (in minutes) for change detection—default is every 30 minutes.
+- **Git Repository Support**: Compatible with any Git repository in Visual Studio Code.
+- **Cross-platform**: Works seamlessly on Windows, macOS, and Linux.
 
 ---
 
-## Following extension guidelines
+## 📦 Requirements
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+To use **Coding Logs**, ensure the following:
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+1. **Git**: Install and configure Git.  
+   Download Git here: [Git Installation Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
-## Working with Markdown
+2. **Visual Studio Code**: Install Visual Studio Code.  
+   Download VS Code here: [VS Code](https://code.visualstudio.com/).
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+3. **Remote Repository**:
+   - Create a remote repository on a platform like GitHub, GitLab, or Bitbucket.
+   - Clone the repository to your local machine.
+   - Ensure that the repository is configured to allow remote commands like `git push`.
+     - Use a **Personal Access Token (PAT)** or **SSH Key** to avoid being prompted for a password every time.
+     - For guidance on creating tokens or SSH keys:
+       - [GitHub: Creating a Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+       - [GitHub: Generating an SSH Key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+---
 
-## For more information
+## ⚙️ Extension Settings
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+**Coding Logs** offers the following configurable settings:
 
-**Enjoy!**
+1. **`codingLogs.logsRepositoryPath`**  
+   **Required** – Specify the directory path of the repository where logs will be stored. This repository tracks productivity and doesn't store sensitive code details.  
+   Example:
+   ```json
+   "codingLogs.logsRepositoryPath": "/path/to/log-repo"
+   ```
+2. **`codingLogs.checkIntervalTime`**
+   Optional – Set the time interval (in minutes) for checking changes in your Git repository. Default is 30 minutes.  
+   Example:
+   ```json
+   "codingLogs.checkIntervalTime": 60
+   ```
+   You can configure these settings in Settings (Ctrl+,) or directly in settings.json.
+
+## Known Issues
+
+- **Interval accuracy**: The interval may not be precise in very short durations due to how the checks are scheduled in the background.
+- **Commit Descriptions**: Commits in the log repository are generic and summarize changes (e.g., "Files modified, added, or deleted").
+
+## 💡 How It Works
+
+Set the logs repository path where your logs will be stored.
+Configure the check interval time to determine how frequently the extension checks for changes.
+The extension detects Git changes (added, modified, or deleted files) and logs them automatically in the specified repository.
+The logged changes contribute to your GitHub activity, keeping your contribution graph updated.
+
+## Example Workflow:
+
+- You make some changes to your codebase.
+- The extension automatically tracks those changes in the interval you configure.
+- Every time a change is detected, it is logged, ensuring that your GitHub contribution graph stays active.
+- You can see your contributions being updated without having to worry about missing a commit.
+
+## Release Notes
+
+### 1.0.0
+
+- Initial release of the extension.
+- Review changes from your Git repository and stores them in a specified logs repository.
+- Adds basic configuration for setting the repository path and check interval.
+- Introduces a changes.txt file to store local comparisons of changes (not pushed to remote repositories).
+
+---
