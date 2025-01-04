@@ -15,10 +15,7 @@ export const processChanges = async (
     fs.mkdirSync(folderPath, { recursive: true });
   }
   const now = new Date();
-  const timestamp = `${String(now.getDate()).padStart(2, '0')}
-                    -${String(now.getMonth() + 1).padStart(2, '0')}
-                    -${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}
-                    _${String(now.getMinutes()).padStart(2, '0')}`;
+  const timestamp = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}_${String(now.getMinutes()).padStart(2, '0')}`;
   const logFile = `${timestamp}.md`;
   const logFilePath = path.join(folderPath, logFile);
 
@@ -46,7 +43,7 @@ const generateCommit = (
     },
     { modified: 0, added: 0, deleted: 0, created: 0 }
   );
-  return `log: ${summary.added} added, ${summary.modified} modified, ${summary.deleted} deleted, ${summary.created} created.`;
+  return `Message: ${summary.added} added, ${summary.modified} modified, ${summary.deleted} deleted, ${summary.created} created.`;
 };
 
 export const generateLogFile = (
@@ -54,9 +51,7 @@ export const generateLogFile = (
   changes: string[]
 ): string => {
   const now = new Date();
-  const timestamp = `${String(now.getDate()).padStart(2, '0')}
-                    -${String(now.getMonth() + 1).padStart(2, '0')}
-                    -${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const timestamp = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const changeDetails = changes
     .map(line => ` - ${line.trim()}`)
     .join('\n');
