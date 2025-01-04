@@ -8,19 +8,29 @@ export const processChanges = async (
   cwd: string,
   changes: string[]
 ) => {
-  const file = path.basename(cwd);
-  const commit = generateCommit(changes);
-  const logPath = path.join(dir, `${file}_logs.md`);
-  const content = generateLogFile(commit, changes);
-  if (fs.existsSync(logPath)) {
-    fs.appendFileSync(logPath, content, { encoding: 'utf-8' });
-  } else {
-    fs.writeFileSync(logPath, content, { encoding: 'utf-8' });
+  const folder = path.basename(cwd);
+  const folderPath = path.join(dir, folder);
+
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
   }
-  await gitAdd(dir, logPath);
+  const now = new Date();
+  const timestamp = `${String(now.getDate()).padStart(2, '0')}
+                    -${String(now.getMonth() + 1).padStart(2, '0')}
+                    -${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}
+                    _${String(now.getMinutes()).padStart(2, '0')}`;
+  const logFile = `${timestamp}.md`;
+  const logFilePath = path.join(folderPath, logFile);
+
+  const commit = generateCommit(changes);
+  const content = generateLogFile(commit, changes);
+
+  fs.writeFileSync(logFilePath, content, { encoding: 'utf-8' });
+
+  await gitAdd(dir, logFilePath);
   await gitCommit(dir, commit);
   await gitPush(dir);
-  storeChanges(cwd, dir);
+  storeChanges(cwd, folderPath);
 };
 
 const generateCommit = (
@@ -28,10 +38,10 @@ const generateCommit = (
 ): string => {
   const summary = changes.reduce(
     (acc, line) => {
-      if (line.startsWith('M')) { acc.modified++; }
-      else if (line.startsWith('A')) { acc.added++; }
-      else if (line.startsWith('D')) { acc.deleted++; }
-      else if (line.startsWith('??')) { acc.created++; }
+      if (line.trim().startsWith('M')) { acc.modified++; }
+      else if (line.trim().startsWith('A')) { acc.added++; }
+      else if (line.trim().startsWith('D')) { acc.deleted++; }
+      else if (line.trim().startsWith('??')) { acc.created++; }
       return acc;
     },
     { modified: 0, added: 0, deleted: 0, created: 0 }
@@ -39,17 +49,24 @@ const generateCommit = (
   return `log: ${summary.added} added, ${summary.modified} modified, ${summary.deleted} deleted, ${summary.created} created.`;
 };
 
-const generateLogFile = (
+export const generateLogFile = (
   commitMessage: string,
   changes: string[]
 ): string => {
-  const date = new Date().toISOString();
-  const changeDetails = changes.map(line => `- ${line}`).join('\n');
+  const now = new Date();
+  const timestamp = `${String(now.getDate()).padStart(2, '0')}
+                    -${String(now.getMonth() + 1).padStart(2, '0')}
+                    -${now.getFullYear()}-${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const changeDetails = changes
+    .map(line => ` - ${line.trim()}`)
+    .join('\n');
   return `
-  ### Commit Message\n
-  ${commitMessage}\n\n
-  ### Commit Details\n
-  ${changeDetails}\n\n
-  _Log generated on ${date}_\n\n
-  ------------------------------\n\n`;
+  ## 🚀 Commit Summary
+  **${commitMessage}**
+  ## 📋 Changes Included
+${changeDetails}
+  ---
+  ⏰ Commit generated on **${timestamp}**
+  ------------------------------
+  `;
 };

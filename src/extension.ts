@@ -4,6 +4,7 @@ import { gitStatus } from './git/commands';
 import { getLogRepoPath, getLogsTimeInterval } from './config';
 import { processChanges } from './actions';
 import { isDeveloperWorking } from './changes';
+import path from 'path';
 
 let intervalId: NodeJS.Timeout | null = null;
 
@@ -14,6 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage("Git is not installed or not configured properly.");
 			return;
 		};
+		vscode.window.showInformationMessage("Coding logs initialized correctly");
 		const cwd = await getCwd();
 		const timeInterval = getLogsTimeInterval();
 		intervalId = setInterval(() => {
@@ -54,7 +56,9 @@ const generateLog = async (
 		vscode.window.showErrorMessage("Logs repository not configured properly.");
 		return;
 	}
-	const isDevWorking = await isDeveloperWorking(cwd, logRepoPath);
+	const folder = path.basename(cwd);
+	const folderPath = path.join(logRepoPath, folder);
+	const isDevWorking = await isDeveloperWorking(cwd, folderPath);
 	if (changes.length <= 0 || !isDevWorking) {
 		vscode.window.showInformationMessage("You need to work!!!");
 		return;

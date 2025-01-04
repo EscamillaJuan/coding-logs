@@ -1,5 +1,4 @@
 import path from 'path';
-import { getLogRepoPath } from './config';
 import { gitDiff, gitIntendToAdd } from './git/commands';
 import * as fs from 'fs';
 
