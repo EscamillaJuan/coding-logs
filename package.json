@@ -2,9 +2,10 @@
   "name": "coding-logs",
   "displayName": "Coding Logs",
   "description": "Track your Git-based productivity by logging changes in your repository, keeping your GitHub contributions graph updated and consistent.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Juan Escamilla",
   "publisher": "JuanEscamilla",
+  "icon": "resources/logo.png",
   "license": "MIT",
   "repository": {
     "type": "git",
