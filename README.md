@@ -84,11 +84,12 @@ The logged changes contribute to your GitHub activity, keeping your contribution
 
 ## Release Notes
 
-### 0.0.2
+### 0.0.3
 
 - Initial release of the extension.
 - Review changes from your Git repository and stores them in a specified logs repository.
 - Adds basic configuration for setting the repository path and check interval.
 - Introduces a changes.txt file to store local comparisons of changes (not pushed to remote repositories).
+- Saves a detailed summary of changes in markdown format, organized into project-specific folders.
 
 ---
