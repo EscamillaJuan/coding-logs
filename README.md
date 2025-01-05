@@ -93,3 +93,17 @@ The logged changes contribute to your GitHub activity, keeping your contribution
 - Saves a detailed summary of changes in markdown format, organized into project-specific folders.
 
 ---
+
+## Contributors
+
+We welcome contributions to Coding Logs! If you'd like to contribute:
+
+1. Create an issue describing the bug or feature you'd like to work on.
+
+2. Fork the repository and implement your changes.
+
+3. Test your changes thoroughly.
+
+4. Submit a pull request with a squash commit summarizing your contributions.
+
+Thank you for making Coding Logs even better!
