@@ -84,7 +84,7 @@ The logged changes contribute to your GitHub activity, keeping your contribution
 
 ## Release Notes
 
-### 1.0.0
+### 1.0.1
 
 - Initial release of the extension.
 - Review changes from your Git repository and stores them in a specified logs repository.
