@@ -61,8 +61,8 @@ jobs:
       - name: Upload binary
         run: |
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
-          curl -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
+          curl -X PATCH \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @$VSIX_FILE \
             "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$VSIX_FILE"
