@@ -33,10 +33,6 @@ jobs:
         run: |
           npm install -g vsce
 
-      - name: Authenticate
-        run: |
-          vsce login ${{ secrets.PUBLISHER_ID  }} && ${{ secrets.VSCE_TOKEN }}
-
       - name: Package extension
         run: |
           vsce package
