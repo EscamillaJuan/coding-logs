@@ -1,0 +1,83 @@
+name: Add new release
+run-name: ${{ github.actor }} is creating a new release
+on:
+  push:
+    branches:
+      - actions
+    path:
+      - "package.json"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: install dependencies
+        run: |
+          npm install
+
+      - name: Get current version
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Check if version change
+        run: |
+          PREVIOUS_COMMIT=$(git log --pretty=format: "%H" -n 2 | tail -n 1")
+          CURRENT_COMMIT=$(git log --pretty=format: "%H" -n 1)
+          git diff $PREVIOUS_COMMIT $CURRENT_COMMIT -- package.json > diff.txt
+          if grep -q '"version":' diff.txt;
+          then
+            echo "Version updated"
+          else
+            echo "No version change detected. Exiting job"
+            exit 0
+          fi
+
+      - name: Install vsce
+        run: |
+          npm install -g vsce
+
+      - name: Authenticate
+        run: |
+          vsce login ${{ secrets.PUBLISHER_ID  }} --token ${{ secrets.VSCE_TOKEN }}
+
+      - name: Package extension
+        run: |
+          vsce package
+
+      - name: Create GitHub release
+        if: success()
+        run: |
+          TAG_NAME="v${{ env.VERSION }}"
+          GITHUB_API="https://api.github.com"
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -d '{
+                  "tag_name": "'"${TAG_NAME}"'",
+                  "name": "Release '"${TAG_NAME}"'",
+                  "body": "Release notes for version '"${TAG_NAME}"'",
+                  "draft": false,
+                  "prerelease": false
+                }' \
+            $GITHUB_API/repos/${{ github.repository }}/releases
+            RELEASE_ID=$(echo $response | jq -r .id)
+
+      - name: Upload binary
+        if: success() # Ensure this runs only if the release is created
+        run: |
+          VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @$VSIX_FILE \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$VSIX_FILE"
