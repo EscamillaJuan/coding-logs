@@ -35,7 +35,7 @@ jobs:
 
       - name: Authenticate
         run: |
-          vsce login ${{ secrets.PUBLISHER_ID  }} --token ${{ secrets.VSCE_TOKEN }}
+          vsce login ${{ secrets.PUBLISHER_ID  }} && ${{ secrets.VSCE_TOKEN }}
 
       - name: Package extension
         run: |
