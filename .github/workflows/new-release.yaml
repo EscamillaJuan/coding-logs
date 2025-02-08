@@ -43,7 +43,7 @@ jobs:
           GITHUB_API="https://api.github.com"
           GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           curl -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -d '{
                   "tag_name": "'"${TAG_NAME}"'",
                   "name": "Release '"${TAG_NAME}"'",
