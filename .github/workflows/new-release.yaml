@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - actions
-    path:
+    paths:
       - "package.json"
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Check if version change
         run: |
-          PREVIOUS_COMMIT=$(git log --pretty=format: "%H" -n 2 | tail -n 1")
+          PREVIOUS_COMMIT=$(git log --pretty=format: "%H" -n 2 | tail -n 1)
           CURRENT_COMMIT=$(git log --pretty=format: "%H" -n 1)
           git diff $PREVIOUS_COMMIT $CURRENT_COMMIT -- package.json > diff.txt
           if grep -q '"version":' diff.txt;
