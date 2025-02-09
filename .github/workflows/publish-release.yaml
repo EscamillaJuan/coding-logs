@@ -1,0 +1,78 @@
+name: Publish a new release
+run-name: ${{ github.actor }} is creating a new release to publish
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: install dependencies
+        run: |
+          npm install
+
+      - name: Get current version
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install vsce
+        run: |
+          npm install -g vsce
+
+      - name: Create GitHub release
+        run: |
+          TAG_NAME="v${{ env.VERSION }}"
+          GITHUB_API="https://api.github.com"
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          response=$(curl -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -d '{
+                  "tag_name": "'"${TAG_NAME}"'",
+                  "name": "Release '"${TAG_NAME}"'",
+                  "body": "Release notes for version '"${TAG_NAME}"'",
+                  "draft": false,
+                  "prerelease": false
+                }' \
+            $GITHUB_API/repos/${{ github.repository }}/releases)
+            RELEASE_ID=$(echo $response | jq -r .id)
+            if [ -z "$RELEASE_ID" ];
+            then
+              echo "Error: RELEASE_ID is empty. The release creation may have failed."
+                exit 1
+            else
+              echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
+            fi
+
+      - name: Upload binary
+        run: |
+          vsce package
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
+          curl -v -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @$VSIX_FILE \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
+
+      - name: Publish in extensions market
+        run: |
+          echo ${{ secrets.VSCE_TOKEN }} | vsce login ${{ secrets.PUBLISHER_ID }}
+          vsce publish
