@@ -1,14 +1,14 @@
-name: Add new release
-run-name: ${{ github.actor }} is creating a new release
+name: Publish a new release
+run-name: ${{ github.actor }} is creating a new release to publish
 on:
   push:
     branches:
-      - actions
+      - main
     paths:
       - "package.json"
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     permissions:
@@ -64,7 +64,6 @@ jobs:
       - name: Upload binary
         run: |
           vsce package
-          echo "Release: $RELEASE_ID"
           GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
           curl -v -X POST \
@@ -72,3 +71,8 @@ jobs:
             -H "Content-Type: application/octet-stream" \
             --data-binary @$VSIX_FILE \
             "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
+
+      - name: Publish in extensions market
+        run: |
+          echo ${{ secrets.VSCE_TOKEN }} | vsce login ${{ secrets.PUBLISHER_ID }}
+          vsce publish
