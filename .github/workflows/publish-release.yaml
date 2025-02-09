@@ -2,8 +2,6 @@ name: Publish a new release
 run-name: ${{ github.actor }} is creating a new release to publish
 on:
   push:
-    branches:
-      - main
     paths:
       - "package.json"
 
