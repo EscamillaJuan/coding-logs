@@ -46,7 +46,7 @@ jobs:
           TAG_NAME="v${{ env.VERSION }}"
           GITHUB_API="https://api.github.com"
           GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          curl -X POST \
+          response=$(curl -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -d '{
                   "tag_name": "'"${TAG_NAME}"'",
@@ -55,14 +55,15 @@ jobs:
                   "draft": false,
                   "prerelease": false
                 }' \
-            $GITHUB_API/repos/${{ github.repository }}/releases
+            $GITHUB_API/repos/${{ github.repository }}/releases)
             RELEASE_ID=$(echo $response | jq -r .id)
 
       - name: Upload binary
         run: |
           echo "Release: $RELEASE_ID"
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
-          curl -X PATCH \
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @$VSIX_FILE \
