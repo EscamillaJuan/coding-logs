@@ -59,12 +59,7 @@ jobs:
             RELEASE_ID=$(echo $response | jq -r .id)
 
       - name: Upload binary
-        run: |
-          echo "Release: $RELEASE_ID"
-          VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @$VSIX_FILE \
-            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$VSIX_FILE"
+        uses: djn24/add-asset-to-release@v2
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          path: "coding-logs-${{ env.VERSION }}.vsix"
