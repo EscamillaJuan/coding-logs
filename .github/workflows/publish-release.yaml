@@ -71,6 +71,7 @@ jobs:
             "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
 
       - name: Publish in extensions market
-        run: |
-          echo ${{ secrets.VSCE_TOKEN }} | vsce login ${{ secrets.PUBLISHER_ID }}
-          vsce publish
+        uses: HaaLeo/publish-vscode-extension@v1.6.2
+        with:
+          pat: ${{ secrets.VSCE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
