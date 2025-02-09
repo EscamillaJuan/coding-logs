@@ -84,9 +84,6 @@ The logged changes contribute to your GitHub activity, keeping your contribution
 
 ## Release Notes
 
-### 1.0.1
-
-- Initial release of the extension.
 - Review changes from your Git repository and stores them in a specified logs repository.
 - Adds basic configuration for setting the repository path and check interval.
 - Introduces a changes.txt file to store local comparisons of changes (not pushed to remote repositories).
@@ -98,7 +95,7 @@ The logged changes contribute to your GitHub activity, keeping your contribution
 
 We welcome contributions to Coding Logs! If you'd like to contribute:
 
-1. Create an issue describing the bug or feature you'd like to work on.
+1. Create an issue describing the bug or feature you'd like to work on, or just start working in a open issue.
 
 2. Fork the repository and implement your changes.
 
