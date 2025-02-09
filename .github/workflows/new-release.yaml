@@ -62,7 +62,7 @@ jobs:
               echo "Error: RELEASE_ID is empty. The release creation may have failed."
                 exit 1
             else
-              echo "Release ID: $RELEASE_ID"
+              echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
             fi
 
       - name: Upload binary
