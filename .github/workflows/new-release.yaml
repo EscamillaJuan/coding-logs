@@ -68,6 +68,7 @@ jobs:
       - name: Upload binary
         run: |
           echo "Release: $RELEASE_ID"
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
           curl -v -X POST \
           -H "Authorization: Bearer $GITHUB_TOKEN" \
