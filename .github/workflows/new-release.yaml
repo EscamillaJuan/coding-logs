@@ -57,9 +57,19 @@ jobs:
                 }' \
             $GITHUB_API/repos/${{ github.repository }}/releases)
             RELEASE_ID=$(echo $response | jq -r .id)
+            if [ -z "$RELEASE_ID" ];
+            then
+              echo "Error: RELEASE_ID is empty. The release creation may have failed."
+                exit 1
+            else
+              echo "Release ID: $RELEASE_ID"
+            fi
 
       - name: Upload binary
-        uses: djn24/add-asset-to-release@v2
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          path: "coding-logs-${{ env.VERSION }}.vsix"
+        run: |
+          echo "Release: $RELEASE_ID"
+          VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
+          curl -v -X POST \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          --data-binary @$VSIX_FILE \
+          "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
