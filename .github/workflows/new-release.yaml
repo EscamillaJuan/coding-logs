@@ -37,10 +37,6 @@ jobs:
         run: |
           npm install -g vsce
 
-      - name: Package extension
-        run: |
-          vsce package
-
       - name: Create GitHub release
         run: |
           TAG_NAME="v${{ env.VERSION }}"
@@ -67,10 +63,12 @@ jobs:
 
       - name: Upload binary
         run: |
+          vsce package
           echo "Release: $RELEASE_ID"
           GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
           curl -v -X POST \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          --data-binary @$VSIX_FILE \
-          "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
+            -H "Authorization: Bearer $GITHUB_TOKEN"
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @$VSIX_FILE \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
