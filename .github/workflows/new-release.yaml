@@ -68,7 +68,7 @@ jobs:
           GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           VSIX_FILE="coding-logs-${{ env.VERSION }}.vsix"
           curl -v -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN"
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @$VSIX_FILE \
             "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $VSIX_FILE)"
