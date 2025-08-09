@@ -23,9 +23,13 @@ export function deactivate() {
 }
 
 async function initializeLogs() {
+    const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     const gitPath = getGitPath();
+    const isRepo = await isRepository(workspacePath || '');
     if (gitPath === null) {
         vscode.window.showErrorMessage("Git is not installed or not configured properly.");
+        return;
+    } else if (!isRepo) {
         return;
     }
     vscode.window.showInformationMessage("Coding logs initialized correctly");
@@ -45,13 +49,11 @@ const getCwd = async (
 ): Promise<string> => {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
-        vscode.window.showErrorMessage("No workspace folder is open.");
         return "";
     }
     const workspacePath = workspaceFolders[0].uri.fsPath;
     const isRepo = await isRepository(workspacePath);
     if (!isRepo) {
-        vscode.window.showErrorMessage("The current folder is not a Git repository.");
         return "";
     }
     return workspacePath;
